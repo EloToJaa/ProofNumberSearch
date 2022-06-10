@@ -5,7 +5,7 @@
 struct PnSearch {
     int playerToCheck;
     Solver* solver;
-    Board *startBoard, *travelsardBoard;
+    Board *travelsardBoard;
     int numberOfNodes;
 
     // can player "player" win?

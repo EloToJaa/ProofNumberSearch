@@ -1,19 +1,5 @@
 #include "Solver.hpp"
 
-void Solver::gen_all_pos_mov(Board& board) {
-    save_all_pos_mov(board);
-
-    print_all_pos_mov();
-}
-
-void Solver::gen_all_pos_mov_cut_if_game_over(Board& board) {
-    deb printf("GEN_ALL_POS_MOV_CUT_IF_GAME_OVER\n");
-
-    save_all_pos_mov_cut_if_game_over(board);
-    
-    print_all_pos_mov();
-}
-
 void Solver::destroy() {
     // Clear all memory
     if(board_count == 0) return;
@@ -31,14 +17,6 @@ void Solver::save_all_pos_mov(Board& board) {
     }
 
     int n = board.empty_count;
-    save_deb {
-        printf("SAVING ALL MOVES\n");
-        printf("STARTING PLAYER: %d\n", board.player);
-        printf("POSSIBLE MOVES: %d\n", n);
-        printf("STARTING BOARD:\n");
-        board.print();
-        printf("\n");
-    }
 
     if(n == 0) {
         board_count = 0;
@@ -66,48 +44,23 @@ void Solver::save_all_pos_mov(Board& board) {
         if(b) break;
     }
 
-    save_deb {
-        printf("k: 0\n");
-        printf("COORDS: 0 0 %d %d\n", x, y);
-    }
     boards[0].copy_from(board_copy);
     boards[0].next_player();
-    save_deb {
-        board_copy.print();
-        printf("\n");
-    }
 
     int px = x, py = y;
     FOR(k, n - 1) {
         int i = k + 1;
-        //! possible error here
         board_copy.kth_zero(x, y, x, y, 0);
-
-        save_deb {
-            printf("k: %d\n", i);
-            printf("COORDS: %d %d %d %d\n", px, py, x, y);
-        }
 
         board_copy.swap_fields(px, py, x, y);
         boards[i].copy_from(board_copy);
         boards[i].next_player();
-
-        save_deb {
-            board_copy.print();
-            printf("\n");
-        }
 
         px = x;
         py = y;
     }
 
     board_copy.destroy();
-}
-
-void Solver::print_pos_mov(int k) {
-    deb printf("PRINTING MOVE NUMBER %d:\n", k);
-    get_pos_mov(k).print();
-    deb printf("\n");
 }
 
 Board Solver::get_pos_mov(int k) {
@@ -145,9 +98,3 @@ void Solver::save_all_pos_mov_cut_if_game_over(Board& board) {
     }
 }
 
-void Solver::print_all_pos_mov() {
-    printf("%d\n", board_count);
-    FOR(i, board_count) {
-        print_pos_mov(i);
-    }
-}

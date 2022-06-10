@@ -23,5 +23,4 @@ void Utils::print_calc_board(int **calc, int n, int m) {
         }
         printf("\n");
     }
-    win_deb printf("\n");
 }

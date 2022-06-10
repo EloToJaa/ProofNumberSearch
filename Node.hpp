@@ -18,7 +18,4 @@ struct Node {
 
     void deleteSubtree();
     void deleteSubtreeUtil(Node* node);
-    void print();
-    void printUtil(Node* node);
-    void printValues(Node* node);
 };

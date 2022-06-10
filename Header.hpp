@@ -7,12 +7,6 @@
 
 #define _CRT_SECURE_NO_WARNINGS
 #define _USE_MATH_DEFINES
-#define deb if(0)
-#define save_deb if(0)
-#define win_deb if(0)
-#define mm_deb if(0)
-#define pn_deb if(0)
-#define trav_deb if(0)
 
 typedef long long ll;
 

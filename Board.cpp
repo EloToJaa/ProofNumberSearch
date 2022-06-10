@@ -72,17 +72,6 @@ void Board::destroy() {
     set_default_values();
 }
 
-void Board::print() {
-    pn_deb printf("DEPTH: %d\n", this->start_depth - this->empty_count);
-    trav_deb printf("DEPTH: %d\n", this->start_depth - this->empty_count);
-    FOR(i, n) {
-        FOR(j, m) {
-            printf("%d ", this->fields[i][j].get_value());
-        }
-        printf("\n");
-    }
-}
-
 void Board::swap_fields(int x, int y, int dx, int dy) {
     assert(on_board(x, y));
     assert(on_board(dx, dy));
@@ -156,13 +145,6 @@ bool Board::win_check(int player) {
         calc[i] = (int *)malloc(sizeof(int) * calc_m);
     }
 
-    win_deb {
-        printf("STARTING WIN CHECK\n");
-        printf("PLAYER %d\n", player);
-        print();
-        printf("\n");
-    }
-
     // Check rows
     utils.zero_calc_board(calc, calc_n, calc_m);
     for(int i = 1; i <= n; i++) {
@@ -176,10 +158,6 @@ bool Board::win_check(int player) {
                 return true;
             }
         }
-    }
-    win_deb {
-        printf("ROWS\n");
-        utils.print_calc_board(calc, calc_n, calc_m);
     }
 
     // Check columns
@@ -196,10 +174,6 @@ bool Board::win_check(int player) {
             }
         }
     }
-    win_deb {
-        printf("COLS\n");
-        utils.print_calc_board(calc, calc_n, calc_m);
-    }
 
     // Check diagonals 1
     utils.zero_calc_board(calc, calc_n, calc_m);
@@ -215,10 +189,6 @@ bool Board::win_check(int player) {
             }
         }
     }
-    win_deb {
-        printf("DIA1\n");
-        utils.print_calc_board(calc, calc_n, calc_m);
-    }
 
     // Check diagonals 2
     utils.zero_calc_board(calc, calc_n, calc_m);
@@ -233,10 +203,6 @@ bool Board::win_check(int player) {
                 return true;
             }
         }
-    }
-    win_deb {
-        printf("DIA2\n");
-        utils.print_calc_board(calc, calc_n, calc_m);
     }
 
     utils.destroy_calc_board(calc, calc_n);

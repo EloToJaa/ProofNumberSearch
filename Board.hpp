@@ -31,8 +31,6 @@ struct Board {
     void copy_from(Board& board);
     void init(int n, int m, int k, int player);
     void destroy();
-
-    void print();
     
     int get_winner();
 

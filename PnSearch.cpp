@@ -1,13 +1,10 @@
 #include "PnSearch.hpp"
 
 bool PnSearch::canPlayerWin(Board* board, int player) {
-    // TODO: check if this is correct
     playerToCheck = player;
     numberOfNodes = 1;
 
     Node* root = (Node*)malloc(sizeof(Node));
-    // printf("CHECK: %d\n", player);
-    // printf("TURN: %d\n", board->player);
     if(board->player == WHITE) {
         if(player == WHITE) {
             root->type = OR_NODE;
@@ -27,10 +24,6 @@ bool PnSearch::canPlayerWin(Board* board, int player) {
     root->expanded = false;
     root->number_of_children = 0;
 
-    //TODO: delete startBoard
-    startBoard = (Board*)malloc(sizeof(Board));
-    startBoard->copy_from(*board);
-
     travelsardBoard = (Board*)malloc(sizeof(Board));
     travelsardBoard->copy_from(*board);
 
@@ -41,9 +34,6 @@ bool PnSearch::canPlayerWin(Board* board, int player) {
     bool can_win = root->proof == 0;
 
     destroy(root);
-
-    startBoard->destroy();
-    free(startBoard);
     
     travelsardBoard->destroy();
     free(travelsardBoard);
@@ -59,36 +49,12 @@ void PnSearch::PN(Node* root, int maxnodes) {
 
     Node* currentNode = root;
 
-    pn_deb {
-        printf("START BOARD:\n");
-        travelsardBoard->print();
-        printf("PLAYER: %d\n\n", travelsardBoard->player);
-    }
-
-    trav_deb {
-        printf("START BOARD:\n");
-        travelsardBoard->print();
-        printf("PLAYER: %d\n\n", travelsardBoard->player);
-    }
-
     while(root->proof != 0 && root->disproof != 0 && countNodes() <= maxnodes) {
         Node* mpn = selectMostProvingNode(currentNode);
 
         expandNode(mpn);
 
-        pn_deb {
-            printf("NEW BOARD I:\n");
-            travelsardBoard->print();
-            printf("\n");
-        }
-
         currentNode = updateAncestors(mpn, root);
-
-        pn_deb {
-            printf("NEW BOARD II:\n");
-            travelsardBoard->print();
-            printf("\n");
-        }
     }
     if(root->proof == 0) {
         root->value = TRUE;
@@ -103,11 +69,6 @@ void PnSearch::PN(Node* root, int maxnodes) {
 
 void PnSearch::evaluate(Node* node, Board* board) {
     int winner = board->get_winner();
-    trav_deb {
-        printf("EVALUATING BOARD:\n");
-        board->print();
-        printf("WINNER: %d\n\n", winner);
-    }
     if (winner == NONE) {
         if(board->empty_count == 0) {
             node->value = FALSE;
@@ -184,23 +145,12 @@ Node* PnSearch::selectMostProvingNode(Node* node) {
         node = node->children[i];
         travelsardBoard->kth_move(i);
         travelsardBoard->next_player();
-        trav_deb {
-            printf("GO DOWN %d:\n", i);
-            travelsardBoard->print();
-            printf("PLAYER: %d\n\n", travelsardBoard->player);
-        }
     }
     return node;
 }
 
 void PnSearch::expandNode(Node* node) {
     generateAllChildren(node);
-
-    // pn_deb {
-    //     printf("EXPANDED NODE:\n");
-    //     node->print();
-    // }
-    pn_deb printf("\n");
 
     FOR(i, node->number_of_children) {
         evaluate(node->children[i], &(solver->boards[i]));
@@ -236,7 +186,6 @@ Node* PnSearch::updateAncestors(Node* node, Node* root) {
         if(node->proof == 0 || node->disproof == 0) {
             node->deleteSubtree();
             numberOfNodes -= node->deleted_nodes;
-            pn_deb printf("NUMBER OF NODES: %d\n\n", numberOfNodes);
         }
 
         if(node == root) {
@@ -246,11 +195,6 @@ Node* PnSearch::updateAncestors(Node* node, Node* root) {
         node = node->parent;
         travelsardBoard->undo_move();
         travelsardBoard->next_player();
-        trav_deb {
-            printf("GO UP:\n");
-            travelsardBoard->print();
-            printf("PLAYER: %d\n\n", travelsardBoard->player);
-        }
 
     } while(true);
 }
@@ -259,8 +203,6 @@ void PnSearch::generateAllChildren(Node* node) {
     solver->save_all_pos_mov_cut_if_game_over(*travelsardBoard);
     node->number_of_children = solver->board_count;
 
-    pn_deb printf("NUMBER OF CHILDREN: %d\n", node->number_of_children);
-
     if(node->number_of_children == 0) {
         node->children = NULL;
         return;
@@ -268,7 +210,6 @@ void PnSearch::generateAllChildren(Node* node) {
 
     // allocate memory for children and set start values
     node->children = (Node**)malloc(sizeof(Node*) * node->number_of_children);
-    // pn_deb printf("ALLOCATION: %p\n", node->children);
     node->expanded = true;
 
     FOR(i, node->number_of_children) {
@@ -281,7 +222,6 @@ void PnSearch::generateAllChildren(Node* node) {
 void PnSearch::destroy(Node* root) {
     root->deleteSubtree();
     numberOfNodes -= root->deleted_nodes;
-    pn_deb printf("NUMBER OF NODES: %d\n\n", numberOfNodes);
     free(root);
 }
 
